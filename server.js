@@ -12,10 +12,22 @@ const botly = new Botly({
 
 botly.on("message", (senderId, message, data) => {
     let text = `echo: ${data.text}`;
+    console.log(message);
+    console.log(data);
+    console.log(senderId);
 
-    botly.sendText({
-        id: senderId,
-        text: text
+    botly.getUserProfile(senderId, function(err, info) {
+        if (data.text === 'oi') {
+            botly.sendText({
+                id: senderId,
+                text: `oi ${info.first_name}`
+            });
+        } else {
+            botly.sendText({
+                id: senderId,
+                text: text
+            });
+        }
     });
 });
 
