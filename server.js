@@ -2,11 +2,29 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const botly = require('botly');
+const Botly = require('botly');
 const config = require('./config');
 
+const botly = new Botly({
+    verifyToken: config.appSecret,
+    accessToken: config.fbToken
+});
+
+botly.on("message", (senderId, message, data) => {
+    let text = `echo: ${data.text}`;
+
+    botly.sendText({
+        id: senderId,
+        text: text
+    });
+});
 
 let app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use('/fb', botly.router());
 
 app.get('/', (req, res) => {
     res.send('oi');
