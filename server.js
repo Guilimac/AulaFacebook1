@@ -10,24 +10,32 @@ const botly = new Botly({
     accessToken: config.fbToken
 });
 
+const chats = [];
+
 botly.on("message", (senderId, message, data) => {
     let text = `echo: ${data.text}`;
-    console.log(message);
-    console.log(data);
-    console.log(senderId);
 
     botly.getUserProfile(senderId, function(err, info) {
-        if (data.text === 'oi') {
-            botly.sendText({
-                id: senderId,
-                text: `oi ${info.first_name}`
-            });
-        } else {
-            botly.sendText({
-                id: senderId,
-                text: text
-            });
+        let status = require('./arvore_1');
+        let chat;
+        console.log(chats);
+        for (var i = 0; i < chats.length; i++) {
+            if (chats[i].senderId === senderId) {
+                chat = chats[i];
+            }
         }
+        if (!chat) {
+            chat = {
+                senderId: senderId,
+                firstName: info.first_name,
+                lastName: info.last_name,
+                picture: info.profile_pic,
+                status: 'arvore_1|hello|start'
+            };
+            chats.push(chat);
+        }
+        console.log(chats);
+        status.reply(chat.status, chat, botly, data);
     });
 });
 
